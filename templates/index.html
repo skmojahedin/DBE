@@ -49,21 +49,11 @@
                     {% endfor %}
                 </select>
 
-                <label>Exam:</label>
-                <select name="exam_id" required>
-                    <option value="">Select Exam</option>
-                    {% for e in exams %}
-                        <option value="{{ e.exam_id }}">{{ e.exam_name }}</option>
-                    {% endfor %}
-                </select>
+                <label>Exam Name:</label>
+                <input type="text" name="exam_name" placeholder="Enter Exam Name" required>
 
-                <label>Subject:</label>
-                <select name="subject_id" required>
-                    <option value="">Select Subject</option>
-                    {% for sub in subjects %}
-                        <option value="{{ sub.subject_id }}">{{ sub.subject_name }}</option>
-                    {% endfor %}
-                </select>
+                <label>Subject Name:</label>
+                <input type="text" name="subject_name" placeholder="Enter Subject Name" required>
 
                 <label>Marks Obtained:</label>
                 <input type="number" name="marks_obtained" step="0.01" required>
