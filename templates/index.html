@@ -1,82 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>National Examination DBE</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<h1>🏫 National Examination Management (DBE)</h1>
+    <header>
+        <h1>🏫 National Examination Management System (DBE)</h1>
+    </header>
 
-<!-- STUDENT REGISTRATION -->
-<section class="card">
-    <h2>Register New Student</h2>
-    <form method="POST" action="/add_student">
-        <input type="text" name="roll_no" placeholder="Roll No" required>
-        <input type="text" name="full_name" placeholder="Full Name" required>
-        <input type="date" name="dob">
-        <input type="email" name="email" placeholder="Email">
-        <input type="text" name="school_name" placeholder="School Name">
-        <input type="text" name="grade_level" placeholder="Grade Level">
-        <button type="submit">Add Student</button>
-    </form>
-</section>
+    <main>
+        <!-- STUDENT REGISTRATION -->
+        <section class="card">
+            <h2>🧑‍🎓 Register New Student</h2>
+            <form method="POST" action="/add_student" class="form-grid">
+                <label>Roll No:</label>
+                <input type="text" name="roll_no" required>
 
-<!-- RESULT ENTRY -->
-<section class="card">
-    <h2>Enter Exam Result</h2>
-    <form method="POST" action="/add_result">
-        <select name="student_id" required>
-            <option value="">Select Student</option>
-            {% for s in students %}
-                <option value="{{ s.student_id }}">{{ s.full_name }}</option>
-            {% endfor %}
-        </select>
+                <label>Full Name:</label>
+                <input type="text" name="full_name" required>
 
-        <select name="exam_id" required>
-            <option value="">Select Exam</option>
-            {% for e in exams %}
-                <option value="{{ e.exam_id }}">{{ e.exam_name }}</option>
-            {% endfor %}
-        </select>
+                <label>Date of Birth:</label>
+                <input type="date" name="dob">
 
-        <select name="subject_id" required>
-            <option value="">Select Subject</option>
-            {% for sub in subjects %}
-                <option value="{{ sub.subject_id }}">{{ sub.subject_name }}</option>
-            {% endfor %}
-        </select>
+                <label>Email:</label>
+                <input type="email" name="email">
 
-        <input type="number" name="marks_obtained" placeholder="Marks" step="0.01" required>
-        <input type="text" name="grade" placeholder="Grade">
-        <input type="text" name="remarks" placeholder="Remarks">
-        <button type="submit">Add Result</button>
-    </form>
-</section>
+                <label>School Name:</label>
+                <input type="text" name="school_name">
 
-<!-- RESULTS DISPLAY -->
-<section class="card">
-    <h2>Results Table</h2>
-    <table>
-        <tr>
-            <th>ID</th><th>Student</th><th>Subject</th><th>Exam</th><th>Marks</th><th>Grade</th>
-        </tr>
-        {% for r in results %}
-        <tr>
-            <td>{{ r.result_id }}</td>
-            <td>{{ r.full_name }}</td>
-            <td>{{ r.subject_name }}</td>
-            <td>{{ r.exam_name }}</td>
-            <td>{{ r.marks_obtained }}</td>
-            <td>{{ r.grade }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</section>
+                <label>Grade Level:</label>
+                <input type="text" name="grade_level">
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="flash">{{ messages[0] }}</div>
-  {% endif %}
-{% endwith %}
+                <button type="submit">➕ Add Student</button>
+            </form>
+        </section>
+
+        <!-- RESULT ENTRY -->
+        <section class="card">
+            <h2>🧾 Enter Exam Result</h2>
+            <form method="POST" action="/add_result" class="form-grid">
+                <label>Student:</label>
+                <select name="student_id" required>
+                    <option value="">Select Student</option>
+                    {% for s in students %}
+                        <option value="{{ s.student_id }}">{{ s.full_name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Exam:</label>
+                <select name="exam_id" required>
+                    <option value="">Select Exam</option>
+                    {% for e in exams %}
+                        <option value="{{ e.exam_id }}">{{ e.exam_name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Subject:</label>
+                <select name="subject_id" required>
+                    <option value="">Select Subject</option>
+                    {% for sub in subjects %}
+                        <option value="{{ sub.subject_id }}">{{ sub.subject_name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Marks Obtained:</label>
+                <input type="number" name="marks_obtained" step="0.01" required>
+
+                <label>Grade:</label>
+                <input type="text" name="grade">
+
+                <label>Remarks:</label>
+                <input type="text" name="remarks">
+
+                <button type="submit">💾 Add Result</button>
+            </form>
+        </section>
+
+        <!-- RESULTS DISPLAY -->
+        <section class="card">
+            <h2>📊 Results Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Exam</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr>
+                        <td>{{ r.result_id }}</td>
+                        <td>{{ r.full_name }}</td>
+                        <td>{{ r.subject_name }}</td>
+                        <td>{{ r.exam_name }}</td>
+                        <td>{{ r.marks_obtained }}</td>
+                        <td>{{ r.grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash">{{ messages[0] }}</div>
+          {% endif %}
+        {% endwith %}
+    </main>
 </body>
 </html>
