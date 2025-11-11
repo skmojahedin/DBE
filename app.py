@@ -1,17 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
+import os
 
 app = Flask(__name__)
-app.secret_key = "secretkey"
+app.secret_key = os.getenv("SECRET_KEY", "defaultsecret")
 
-# ---- DATABASE CONFIG ----
-db = mysql.connector.connect(
-    host="sql12.freesqldatabase.com",
-    user="sql12807258",
-    password="yourpassword",   # replace with your DB password
-    database="sql12807258"
-)
-cursor = db.cursor(dictionary=True)
+# ---- DATABASE CONFIG USING ENV VARIABLES ----
+db_config = {
+    "host": os.getenv("DB_HOST", "sql12.freesqldatabase.com"),
+    "user": os.getenv("DB_USER", "sql12807258"),
+    "password": os.getenv("DB_PASSWORD", "tueQ4wZzzc"),  # default fallback
+    "database": os.getenv("DB_NAME", "sql12807258"),
+    "port": int(os.getenv("DB_PORT", 3306))
+}
+
+try:
+    db = mysql.connector.connect(**db_config)
+    cursor = db.cursor(dictionary=True)
+except mysql.connector.Error as err:
+    print("Database connection failed:", err)
 
 # ---- ROUTES ----
 @app.route('/')
@@ -22,11 +29,13 @@ def index():
     subjects = cursor.fetchall()
     cursor.execute("SELECT * FROM exams")
     exams = cursor.fetchall()
-    cursor.execute("""SELECT r.result_id, s.full_name, sub.subject_name, e.exam_name, r.marks_obtained, r.grade 
-                      FROM results r
-                      JOIN students s ON r.student_id = s.student_id
-                      JOIN subjects sub ON r.subject_id = sub.subject_id
-                      JOIN exams e ON r.exam_id = e.exam_id""")
+    cursor.execute("""
+        SELECT r.result_id, s.full_name, sub.subject_name, e.exam_name, r.marks_obtained, r.grade 
+        FROM results r
+        JOIN students s ON r.student_id = s.student_id
+        JOIN subjects sub ON r.subject_id = sub.subject_id
+        JOIN exams e ON r.exam_id = e.exam_id
+    """)
     results = cursor.fetchall()
     return render_template("index.html", students=students, subjects=subjects, exams=exams, results=results)
 
@@ -39,10 +48,12 @@ def add_student():
     email = request.form['email']
     school_name = request.form['school_name']
     grade_level = request.form['grade_level']
-    cursor.execute("""INSERT INTO students (roll_no, full_name, dob, email, school_name, grade_level)
-                      VALUES (%s, %s, %s, %s, %s, %s)""",
-                   (roll_no, full_name, dob, email, school_name, grade_level))
+
+    query = """INSERT INTO students (roll_no, full_name, dob, email, school_name, grade_level)
+               VALUES (%s, %s, %s, %s, %s, %s)"""
+    cursor.execute(query, (roll_no, full_name, dob, email, school_name, grade_level))
     db.commit()
+
     flash("Student added successfully!")
     return redirect(url_for('index'))
 
@@ -55,12 +66,16 @@ def add_result():
     marks = request.form['marks_obtained']
     grade = request.form['grade']
     remarks = request.form['remarks']
-    cursor.execute("""INSERT INTO results (student_id, exam_id, subject_id, marks_obtained, grade, remarks)
-                      VALUES (%s, %s, %s, %s, %s, %s)""",
-                   (student_id, exam_id, subject_id, marks, grade, remarks))
+
+    query = """INSERT INTO results (student_id, exam_id, subject_id, marks_obtained, grade, remarks)
+               VALUES (%s, %s, %s, %s, %s, %s)"""
+    cursor.execute(query, (student_id, exam_id, subject_id, marks, grade, remarks))
     db.commit()
+
     flash("Result added successfully!")
     return redirect(url_for('index'))
 
+# ---- RUN APP ----
 if __name__ == '__main__':
-    app.run(debug=True)
+    # For local testing use debug=True; on Render it's auto-managed
+    app.run(host='0.0.0.0', port=5000)
