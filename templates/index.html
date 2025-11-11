@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>National Examination DBE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h1>🏫 National Examination Management (DBE)</h1>
+
+<!-- STUDENT REGISTRATION -->
+<section class="card">
+    <h2>Register New Student</h2>
+    <form method="POST" action="/add_student">
+        <input type="text" name="roll_no" placeholder="Roll No" required>
+        <input type="text" name="full_name" placeholder="Full Name" required>
+        <input type="date" name="dob">
+        <input type="email" name="email" placeholder="Email">
+        <input type="text" name="school_name" placeholder="School Name">
+        <input type="text" name="grade_level" placeholder="Grade Level">
+        <button type="submit">Add Student</button>
+    </form>
+</section>
+
+<!-- RESULT ENTRY -->
+<section class="card">
+    <h2>Enter Exam Result</h2>
+    <form method="POST" action="/add_result">
+        <select name="student_id" required>
+            <option value="">Select Student</option>
+            {% for s in students %}
+                <option value="{{ s.student_id }}">{{ s.full_name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="exam_id" required>
+            <option value="">Select Exam</option>
+            {% for e in exams %}
+                <option value="{{ e.exam_id }}">{{ e.exam_name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="subject_id" required>
+            <option value="">Select Subject</option>
+            {% for sub in subjects %}
+                <option value="{{ sub.subject_id }}">{{ sub.subject_name }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="number" name="marks_obtained" placeholder="Marks" step="0.01" required>
+        <input type="text" name="grade" placeholder="Grade">
+        <input type="text" name="remarks" placeholder="Remarks">
+        <button type="submit">Add Result</button>
+    </form>
+</section>
+
+<!-- RESULTS DISPLAY -->
+<section class="card">
+    <h2>Results Table</h2>
+    <table>
+        <tr>
+            <th>ID</th><th>Student</th><th>Subject</th><th>Exam</th><th>Marks</th><th>Grade</th>
+        </tr>
+        {% for r in results %}
+        <tr>
+            <td>{{ r.result_id }}</td>
+            <td>{{ r.full_name }}</td>
+            <td>{{ r.subject_name }}</td>
+            <td>{{ r.exam_name }}</td>
+            <td>{{ r.marks_obtained }}</td>
+            <td>{{ r.grade }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash">{{ messages[0] }}</div>
+  {% endif %}
+{% endwith %}
+</body>
+</html>
